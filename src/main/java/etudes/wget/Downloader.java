@@ -8,16 +8,17 @@ import java.util.concurrent.BlockingQueue;
 
 /**
  * Performs main download job.
+ *  @author <a href="mailto:roman.kashitsyn@gmail.com">Roman Kashitsyn</a>
  */
 public class Downloader implements Runnable {
 
     private final String fileName;
     private final URLConnection connection;
-    private final BlockingQueue<ProgressStatus> progressQueue;
+    private final BlockingQueue<ProgressInfo> progressQueue;
 
     public Downloader(String fileName,
                       URLConnection connection,
-                      BlockingQueue<ProgressStatus> progressQueue) {
+                      BlockingQueue<ProgressInfo> progressQueue) {
         this.fileName = fileName;
         this.connection = connection;
         this.progressQueue = progressQueue;
@@ -29,8 +30,8 @@ public class Downloader implements Runnable {
         try {
             byte[] buffer = new byte[4096];
             fileOut = new FileOutputStream(fileName);
-            int total = connection.getContentLength();
-            int readSoFar = 0;
+            long total = connection.getContentLength();
+            long readSoFar = 0;
             inputStream = connection.getInputStream();
             while (true) {
                 int read = inputStream.read(buffer);
@@ -38,16 +39,19 @@ public class Downloader implements Runnable {
                 if (read > 0) {
                     fileOut.write(buffer, 0, read);
                     readSoFar += read;
-                    progressQueue.offer(new ProgressStatus(fileName, readSoFar * 100 / total));
+                    progressQueue.offer(
+                            new ProgressInfo(fileName, ProgressInfo.Status.SUCCESS, (int) (readSoFar * 100 / total)));
                 } else {
+                    progressQueue.offer(new ProgressInfo(fileName, ProgressInfo.Status.DONE, 100));
                     break;
                 }
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            progressQueue.offer(new ProgressInfo(fileName, ProgressInfo.Status.FAIL, 0));
         } finally {
-            Util.closeQuiet(fileOut);
-            Util.closeQuiet(inputStream);
+            Util.closeQuietly(fileOut);
+            Util.closeQuietly(inputStream);
         }
     }
     
