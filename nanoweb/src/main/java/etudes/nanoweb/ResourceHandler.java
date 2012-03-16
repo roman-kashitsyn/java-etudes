@@ -48,7 +48,7 @@ public class ResourceHandler implements Handler {
         }
     }
     
-    public static Handler onDirectory(String path) {
+    public static Handler onDocumentRoot(String path) {
         File rootDir = new File(path);
         if (!rootDir.exists()) {
             throw new IllegalArgumentException("WWW directory " + path + " does not exist");

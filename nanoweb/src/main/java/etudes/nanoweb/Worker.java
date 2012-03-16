@@ -5,6 +5,7 @@ import com.google.common.io.Closeables;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.channels.SocketChannel;
 
 /**
  * Simple HTTP worker.
@@ -42,6 +43,7 @@ public class Worker implements Runnable {
         while (bufferedInputStream.available() > 0) {
             requestBuilder.append(in.readLine());
         }
+        //clientSocket.shutdownInput();
         return new HttpRequestParser(requestBuilder.toString());
     }
 

@@ -21,6 +21,7 @@ public class HttpRequestParser implements HttpRequest {
     private Map<String, String> parameters = new HashMap<String, String>();
 
     public HttpRequestParser(String requestAsString) {
+        System.out.println("Handling request: " + requestAsString);
         String[] lines = requestAsString.split("\r?\n");
         parseFirstLine(lines[0]);
         if (lines.length > 1) {
@@ -70,9 +71,9 @@ public class HttpRequestParser implements HttpRequest {
     }
 
     private void parseFirstLine(String firstLine) {
-        String[] parts = firstLine.split("\\s");
+        String[] parts = firstLine.split("\\s+");
         if (parts.length != 3) {
-            throw new IllegalArgumentException("Invalid http request first line");
+            throw new IllegalArgumentException("Invalid http request first line: " + firstLine);
         }
         this.method = HttpMethod.valueOf(parts[0]);
 
@@ -118,7 +119,7 @@ public class HttpRequestParser implements HttpRequest {
             StringBuilder bodyBuilder = new StringBuilder();
             for (int i = startWith; i < lines.length; ++i) {
                 bodyBuilder.append(lines[i]);
-                bodyBuilder.append(Constants.CRLF);
+                bodyBuilder.append(Utils.CRLF);
             }
             body = bodyBuilder.toString();
         }

@@ -11,7 +11,7 @@ import etudes.nanoweb.ResourceHandler;
 public class App {
     
     public static void main(String... args) {
-        Handler handler = ResourceHandler.onDirectory("/home/roman/Documents/www");
+        Handler handler = ResourceHandler.onDocumentRoot("/home/roman/Documents/www");
         HttpServer server = new HttpServer(handler, 10000);
         server.start();
     }

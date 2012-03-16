@@ -70,7 +70,7 @@ public class HttpResponseImpl implements HttpResponse {
         writer.write(statusCode.getCode());
         writer.write(" ");
         writer.write(statusCode.getName());
-        writer.write(Constants.CRLF);
+        writer.write(Utils.CRLF);
     }
 
     private void writeHeaders(PrintWriter writer) {
@@ -79,8 +79,8 @@ public class HttpResponseImpl implements HttpResponse {
             writer.write(header.getKey());
             writer.write(": ");
             writer.write(header.getValue());
-            writer.write(Constants.CRLF);
+            writer.write(Utils.CRLF);
         }
-        writer.write(Constants.CRLF);
+        writer.write(Utils.CRLF);
     }
 }
