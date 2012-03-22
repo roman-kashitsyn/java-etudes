@@ -34,7 +34,6 @@ public class ResourceHandler implements Handler {
         } else {
             tryServe(destination, httpResponse);
         }
-        httpResponse.done();
     }
     
     public void tryServe(File f, HttpResponse response) {

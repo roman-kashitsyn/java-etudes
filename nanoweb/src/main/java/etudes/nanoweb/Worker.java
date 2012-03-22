@@ -29,6 +29,8 @@ public class Worker implements Runnable {
             logConnection(request);
             handler.serve(request, response);
             logResponse(response);
+            response.done();
+            clientSocket.close();
         } catch (Exception e) {
             if (response != null) {
                 response.setStatus(HttpResponse.ResponseStatus.INTERNAL_SERVER_ERROR);

@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
  */
 public class HttpServer implements Runnable {
     
-    private static final String NAME = "NanoWebServer 0.1";
+    public static final String NAME = "NanoWebServer 0.1";
     
     private final Handler handler;
     private final int port;

@@ -39,8 +39,10 @@ public class Router implements Handler {
                     LOG.info("ROUTE " + httpRequest.getPath() + " -> " + route.getHandler().getClass());
                 }
                 route.getHandler().serve(httpRequest, httpResponse);
+                return;
             }
         }
+        httpResponse.setStatus(HttpResponse.ResponseStatus.NOT_FOUND);
     }
 
     protected Collection<Route> getRoutes() {

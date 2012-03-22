@@ -6,12 +6,16 @@ import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * HTTP response implementation.
  * @author <a href="mailto:roman.kashitsyn@gmail.com">Roman Kashitsyn</a>
  */
 class HttpResponseImpl implements HttpResponse {
+    
+    private static final Logger LOG = Logger.getLogger(HttpResponseImpl.class.getName());
     
     private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     private Map<String, String> headers = new HashMap<String, String>();
@@ -53,16 +57,16 @@ class HttpResponseImpl implements HttpResponse {
             throw new IllegalStateException("Http response has already been rendered!");
         }
         try {
-            OutputStream bufferedOutput = new BufferedOutputStream(realOutput);
-            PrintWriter printWriter = new PrintWriter(bufferedOutput);
+            //OutputStream bufferedOutput = new BufferedOutputStream(realOutput);
+            PrintWriter printWriter = new PrintWriter(realOutput);
             writeResponseLine(printWriter);
             writeHeaders(printWriter);
             printWriter.flush();
-            bufferedOutput.write(buffer.toByteArray());
-            bufferedOutput.flush();
+            realOutput.write(buffer.toByteArray());
+            //bufferedOutput.flush();
             printWriter.close();
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            LOG.log(Level.SEVERE, "Can not compose response", ioe);
         } finally {
             closed = true;
             Closeables.closeQuietly(realOutput);
@@ -71,7 +75,7 @@ class HttpResponseImpl implements HttpResponse {
 
     private void writeResponseLine(PrintWriter writer) {
         writer.write("HTTP/1.0 ");
-        writer.write(statusCode.getCode());
+        writer.write(String.valueOf(statusCode.getCode()));
         writer.write(" ");
         writer.write(statusCode.getName());
         writer.write(Utils.CRLF);
@@ -80,6 +84,7 @@ class HttpResponseImpl implements HttpResponse {
     private void writeHeaders(PrintWriter writer) {
         putHeaderIfAbsent(Utils.CONTENT_LENGTH, String.valueOf(buffer.size()));
         putHeaderIfAbsent(Utils.CONTENT_TYPE, Utils.DEFAULT_CONTENT_TYPE);
+        putHeaderIfAbsent(Utils.SERVER, HttpServer.NAME);
         for (Map.Entry<String, String> header : headers.entrySet()) {
             writer.write(header.getKey());
             writer.write(": ");
