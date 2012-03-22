@@ -3,6 +3,8 @@ package etudes.nanoweb.app;
 import etudes.nanoweb.Handler;
 import etudes.nanoweb.HttpServer;
 import etudes.nanoweb.ResourceHandler;
+import etudes.nanoweb.routes.Router;
+import etudes.nanoweb.routes.Routes;
 
 /**
  * Sample app with our server.
@@ -11,8 +13,10 @@ import etudes.nanoweb.ResourceHandler;
 public class App {
     
     public static void main(String... args) {
-        Handler handler = ResourceHandler.onDocumentRoot("/home/roman/Documents/www");
-        HttpServer server = new HttpServer(handler, 10000);
+        Router appRouter = Routes.scan("etudes.nanoweb.app.handlers");
+        appRouter.addRoute(Routes.staticRoute("/static", "/home/roman/Documents/www"));
+
+        HttpServer server = new HttpServer(appRouter, 10000);
         server.start();
     }
 }

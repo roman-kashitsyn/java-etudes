@@ -32,7 +32,9 @@ public interface HttpResponse {
         }
     }
 
-    public void setStatusCode(ResponseStatus status);
+    public void setStatus(ResponseStatus status);
+
+    public ResponseStatus getStatus();
 
     public void setContentType(String mime);
     

@@ -14,15 +14,20 @@ import java.io.OutputStream;
 public class ResourceHandler implements Handler {
     
     private final File wwwRoot;
+    private String prefix;
 
     private final String defaultFile = "index.html";
     
-    private ResourceHandler(File wwwRoot) {
+    private ResourceHandler(String prefix, File wwwRoot) {
         this.wwwRoot = wwwRoot;
+        this.prefix = prefix;
     }
 
     public void serve(HttpRequest httpRequest, HttpResponse httpResponse) {
         String requestPath = httpRequest.getPath();
+        if (prefix != null && requestPath.startsWith(prefix)) {
+            requestPath = requestPath.substring(prefix.length());
+        }
         File destination = new File(wwwRoot.getAbsolutePath() + "/" + requestPath);
         if (destination.exists() && destination.isDirectory()) {
             tryServe(new File(destination.getAbsolutePath() + "/" + defaultFile), httpResponse);
@@ -34,14 +39,14 @@ public class ResourceHandler implements Handler {
     
     public void tryServe(File f, HttpResponse response) {
         if (!f.exists()) {
-            response.setStatusCode(HttpResponse.ResponseStatus.NOT_FOUND);
+            response.setStatus(HttpResponse.ResponseStatus.NOT_FOUND);
         } else {
             OutputStream outputStream = null;
             try {
                 outputStream = response.getOutputStream();
                 Files.copy(f, outputStream);
             } catch (IOException ioe) {
-                response.setStatusCode(HttpResponse.ResponseStatus.INTERNAL_SERVER_ERROR);
+                response.setStatus(HttpResponse.ResponseStatus.INTERNAL_SERVER_ERROR);
             } finally {
                 Closeables.closeQuietly(outputStream);
             }
@@ -49,6 +54,10 @@ public class ResourceHandler implements Handler {
     }
     
     public static Handler onDocumentRoot(String path) {
+        return onDocumentRoot(null, path);
+    }
+    
+    public static Handler onDocumentRoot(String prefix, String path) {
         File rootDir = new File(path);
         if (!rootDir.exists()) {
             throw new IllegalArgumentException("WWW directory " + path + " does not exist");
@@ -56,6 +65,6 @@ public class ResourceHandler implements Handler {
         if (!rootDir.isDirectory()) {
             throw new IllegalArgumentException("Path " + path + " is not a directory");
         }
-        return new ResourceHandler(rootDir);
+        return new ResourceHandler(prefix, rootDir);
     }
 }

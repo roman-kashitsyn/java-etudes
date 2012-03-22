@@ -11,29 +11,33 @@ import java.util.Map;
  * HTTP response implementation.
  * @author <a href="mailto:roman.kashitsyn@gmail.com">Roman Kashitsyn</a>
  */
-public class HttpResponseImpl implements HttpResponse {
+class HttpResponseImpl implements HttpResponse {
     
     private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     private Map<String, String> headers = new HashMap<String, String>();
     private final OutputStream realOutput;
     private ResponseStatus statusCode = ResponseStatus.OK;
-    private String contentType = "text/html";
     private boolean closed = false;
 
     public HttpResponseImpl(OutputStream realOutput) {
         this.realOutput = realOutput;
     }
 
-    public void setStatusCode(ResponseStatus status) {
+    public void setStatus(ResponseStatus status) {
         this.statusCode = status;
     }
 
+    public ResponseStatus getStatus() {
+        return this.statusCode;
+    }
+
     public void setContentType(String mime) {
-        contentType = mime;
+        setHeader("Content-Type", mime);
     }
 
     public void setLastModified(Date lastModified) {
-        
+        // TODO: GMT format
+        setHeader("Last-Modified", String.valueOf(lastModified.getTime()));
     }
     
     public void setHeader(String name, String value) {
@@ -74,7 +78,8 @@ public class HttpResponseImpl implements HttpResponse {
     }
 
     private void writeHeaders(PrintWriter writer) {
-        headers.put("Content-Length", String.valueOf(buffer.size()));
+        putHeaderIfAbsent(Utils.CONTENT_LENGTH, String.valueOf(buffer.size()));
+        putHeaderIfAbsent(Utils.CONTENT_TYPE, Utils.DEFAULT_CONTENT_TYPE);
         for (Map.Entry<String, String> header : headers.entrySet()) {
             writer.write(header.getKey());
             writer.write(": ");
@@ -82,5 +87,11 @@ public class HttpResponseImpl implements HttpResponse {
             writer.write(Utils.CRLF);
         }
         writer.write(Utils.CRLF);
+    }
+    
+    private void putHeaderIfAbsent(String header, String value) {
+        if (!headers.containsKey(header)) {
+            headers.put(header, value);
+        }
     }
 }

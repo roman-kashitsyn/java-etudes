@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Parser for HTTP requests.
+ * Implementation of HTTP requests.
  * @author <a href="mailto:roman.kashitsyn@gmail.com">Roman Kashitsyn</a>
  */
-public class HttpRequestParser implements HttpRequest {
+class HttpRequestImpl implements HttpRequest {
     
     private HttpMethod method;
     private URI requestURI;
@@ -20,8 +20,7 @@ public class HttpRequestParser implements HttpRequest {
     private Map<String, String> headers = new HashMap<String, String>();
     private Map<String, String> parameters = new HashMap<String, String>();
 
-    public HttpRequestParser(String requestAsString) {
-        System.out.println("Handling request: " + requestAsString);
+    public HttpRequestImpl(String requestAsString) {
         String[] lines = requestAsString.split("\r?\n");
         parseFirstLine(lines[0]);
         if (lines.length > 1) {
@@ -59,7 +58,7 @@ public class HttpRequestParser implements HttpRequest {
     }
     
     public String getParameter(String name) {
-        return name;
+        return parameters.get(name);
     }
     
     public void putParameter(String name, String value) {
