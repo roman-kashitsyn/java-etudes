@@ -10,7 +10,7 @@ import java.util.logging.Logger;
  */
 public class Worker implements Runnable {
     
-    private static final Logger LOG  = Logger.getLogger(Worker.class.getName());
+    private static final Logger LOG  = Logger.getLogger("etudes.nanoweb.server.worker");
 
     private final Socket clientSocket;
     private final Handler handler;

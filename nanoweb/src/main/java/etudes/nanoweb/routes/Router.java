@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  * @author <a href="mailto:roman.kashitsyn@gmail.com">Roman Kashitsyn</a>
  */
 public class Router implements Handler {
-    private static final Logger LOG = Logger.getLogger("Router");
+    private static final Logger LOG = Logger.getLogger("etudes.nanoweb.server.router");
     private final Collection<Route> routes;
     
     private Router(Collection<Route> routes) {

@@ -37,6 +37,14 @@ public class Routes {
         };
     }
     
+    public static Route byPrefix(final String prefix, final Handler handler) {
+        return new AbstractRoute(handler) {
+            public boolean apply(HttpRequest httpRequest) {
+                return httpRequest != null && httpRequest.getPath().startsWith(prefix);
+            }
+        };
+    }
+    
     public static Route exactPath(final HttpMethod method, final String path, final Handler handler) {
         return new AbstractRoute(handler) {
             public boolean apply(HttpRequest httpRequest) {

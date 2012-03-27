@@ -84,7 +84,7 @@ class HttpResponseImpl implements HttpResponse {
     private void writeHeaders(PrintWriter writer) {
         putHeaderIfAbsent(Utils.CONTENT_LENGTH, String.valueOf(buffer.size()));
         putHeaderIfAbsent(Utils.CONTENT_TYPE, Utils.DEFAULT_CONTENT_TYPE);
-        putHeaderIfAbsent(Utils.SERVER, HttpServer.NAME);
+        putHeaderIfAbsent(Utils.SERVER, HttpServer.getName() + " " + HttpServer.getVersion());
         for (Map.Entry<String, String> header : headers.entrySet()) {
             writer.write(header.getKey());
             writer.write(": ");

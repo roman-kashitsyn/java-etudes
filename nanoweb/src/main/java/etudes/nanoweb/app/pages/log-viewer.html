@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Log viewer</title>
+    <style type="text/css">
+        body {
+            font-family: Monospace;
+            font-size: 10px;
+        }
+    </style>
+    <script type="text/javascript" src="/static/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript">
+        var lastLoaded = 0;
+
+        function makeTable(data) {
+            var logData = $.parseJSON(data);
+            var div = $('div#log-table');
+            var tbl = $('<table/>');
+            var prop;
+            div.append(tbl);
+            tr = $('<tr/>');
+            for (prop in logData[0]) {
+                tr.append($('<th/>').text(prop));
+            }
+            tbl.append(tr);
+            updateTable(logData);
+        }
+
+        function updateTable(logData) {
+            var tbl = $('div#log-table table');
+            var tr, td, txt, row, prop;
+
+            for (var i = 0; i < logData.length; ++i) {
+                tr = $('<tr/>');
+                row = logData[i];
+                for (prop in row) {
+                    txt = (prop != "level") ? row[prop] : row[prop]["name"];
+                    if (prop == "millis") {
+                        lastLoaded = Math.max(lastLoaded, row[prop]);
+                    }
+                    tr.append($('<td/>').text(txt));
+                }
+                tbl.append(tr);
+            }
+        }
+
+        $(document).ready(function() {
+            $.ajax({
+                url: "/log.json",
+                success: makeTable
+            });
+            $('button#refresh').on('click', function() {
+                $.ajax({
+                    url: "/log.json?from=" + lastLoaded,
+                    success: function(data) { updateTable($.parseJSON(data)); }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<button id="refresh" >Update</button>
+<div id="log-table"></div>
+</body>
+</html>
