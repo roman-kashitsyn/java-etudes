@@ -16,6 +16,7 @@
         <module>wget</module>
         <module>nanoweb</module>
         <module>lockfreeit</module>
+        <module>cache</module>
     </modules>
 
     <properties>
