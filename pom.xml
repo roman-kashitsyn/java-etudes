@@ -17,6 +17,7 @@
         <module>nanoweb</module>
         <module>lockfreeit</module>
         <module>cache</module>
+        <module>ptasks</module>
     </modules>
 
     <properties>
